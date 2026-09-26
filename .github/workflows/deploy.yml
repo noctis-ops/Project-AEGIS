@@ -1,0 +1,58 @@
+name: Build approved image
+
+on:
+  workflow_dispatch:
+    inputs:
+      git_ref:
+        description: Audited commit SHA
+        required: true
+      enable_live:
+        description: Build the live-trading feature (requires environment approval)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  image:
+    environment: production
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.git_ref }}
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ap-northeast-1
+
+      - uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push immutable image
+        env:
+          ECR: ${{ vars.AEGIS_ECR_URL }}
+          SHA: ${{ inputs.git_ref }}
+          ENABLE_LIVE: ${{ inputs.enable_live }}
+        run: |
+          set -euo pipefail
+
+          if [ "$ENABLE_LIVE" = "true" ]; then
+            docker build \
+              --build-arg AEGIS_FEATURES="parquet-data live-trading" \
+              -t "$ECR:$SHA" .
+          else
+            docker build \
+              --build-arg AEGIS_FEATURES="parquet-data" \
+              -t "$ECR:$SHA" .
+          fi
+
+          docker push "$ECR:$SHA"
+
+      - name: Deployment remains a separate reviewed IaC change
+        run: |
+          echo "Image pushed."
+          echo "Update Terraform image_tag through a reviewed plan."
