@@ -1,0 +1,16 @@
+/target
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.parquet
+/data/
+/logs/
+.DS_Store
+.idea/
+.vscode/
+terraform.tfstate
+terraform.tfstate.*
+.terraform/
+*.tfvars

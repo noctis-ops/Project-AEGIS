@@ -1,0 +1,55 @@
+{
+  "title": "Project AEGIS",
+  "uid": "project-aegis",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Live Equity (USDT)",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
+      "targets": [{ "expr": "aegis_equity", "legendFormat": "equity" }]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Actual Exposure (USDT)",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
+      "targets": [{ "expr": "aegis_exposure", "legendFormat": "exposure" }]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Tick-to-Trade Latency (µs)",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
+      "targets": [{ "expr": "aegis_execution_latency_us", "legendFormat": "{{symbol}}" }]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "OBI and VPIN",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        { "expr": "aegis_obi", "legendFormat": "OBI {{symbol}}" },
+        { "expr": "aegis_vpin", "legendFormat": "VPIN {{symbol}}" }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Slippage",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 8 },
+      "targets": [{ "expr": "aegis_execution_slippage", "legendFormat": "{{symbol}}" }]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Circuit Breaker (0–3)",
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 8 },
+      "targets": [{ "expr": "aegis_breaker_level" }]
+    }
+  ]
+}

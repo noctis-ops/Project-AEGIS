@@ -1,0 +1,47 @@
+services:
+  aegis:
+    build: .
+    command: ["shadow", "BTCUSDT"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      AEGIS_STATSD_ADDR: statsd-exporter:8125
+    restart: unless-stopped
+    depends_on:
+      - statsd-exporter
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  statsd-exporter:
+    image: prom/statsd-exporter:v0.28.0
+    command: ["--statsd.mapping-config=/etc/statsd/mapping.yml"]
+    volumes:
+      - ./ops/statsd-mapping.yml:/etc/statsd/mapping.yml:ro
+    ports:
+      - "127.0.0.1:9102:9102"
+    expose:
+      - "8125/udp"
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    volumes:
+      - ./ops/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "127.0.0.1:9090:9090"
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.3.1
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    volumes:
+      - ./ops/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./ops/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    restart: unless-stopped

@@ -1,0 +1,20 @@
+[Unit]
+Description=Project AEGIS shadow/live engine
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/aegis/aegis.env
+Environment=AEGIS_IMAGE=project-aegis:current
+ExecStartPre=-/usr/bin/docker rm -f aegis
+ExecStart=/usr/bin/docker run --name aegis --network host --read-only --cap-drop ALL --security-opt no-new-privileges --env-file /etc/aegis/aegis.env ${AEGIS_IMAGE} shadow BTCUSDT
+ExecStop=/usr/bin/docker stop -t 10 aegis
+Restart=always
+RestartSec=1
+TimeoutStopSec=15
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

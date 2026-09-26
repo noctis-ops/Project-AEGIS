@@ -1,0 +1,4 @@
+mappings:
+  - match: "aegis.*"
+    name: "aegis_$1"
+    match_metric_type: gauge
