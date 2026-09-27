@@ -1,4 +1,6 @@
 use crate::domain::{BookSnapshot, MarketEvent};
+#[cfg(feature = "parquet-data")]
+use crate::domain::BookDelta;
 use std::path::Path;
 
 // Replay preserves the exact allocation-free MarketEvent representation used
