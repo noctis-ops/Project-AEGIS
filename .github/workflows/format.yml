@@ -1,6 +1,12 @@
 name: Format source
 
 on:
+  push:
+    branches:
+      - arena/01a0d9e9-project-aegis
+    paths:
+      - .github/workflows/format.yml
+
   workflow_dispatch:
 
 permissions:
