@@ -216,8 +216,7 @@ impl TelegramC2 {
             }
             ["/halt"] => {
                 *pending = Some(C2Command::HaltConfirmed);
-                "⚠️ هل أنت متأكد من إيقاف النظام وإغلاق المراكز؟ أرسل رمز التأكيد اليومي."
-                    .to_owned()
+                "⚠️ هل أنت متأكد من إيقاف النظام وإغلاق المراكز؟ أرسل رمز التأكيد اليومي.".to_owned()
             }
             ["/resume"] => {
                 let _ = self.commands.send(C2Command::Resume).await;
