@@ -15,11 +15,10 @@ impl OrderSlicer {
         if total.0 <= 0 || visible_quantity.0 <= 0 || self.quantity_step.0 <= 0 {
             return Vec::new();
         }
-        let per_child = Fixed::from_f64(
-            visible_quantity.as_f64() * self.max_participation.clamp(0.001, 1.0),
-        )
-        .floor_to(self.quantity_step)
-        .max(self.quantity_step);
+        let per_child =
+            Fixed::from_f64(visible_quantity.as_f64() * self.max_participation.clamp(0.001, 1.0))
+                .floor_to(self.quantity_step)
+                .max(self.quantity_step);
         let mut remaining = total.floor_to(self.quantity_step);
         let mut children = Vec::new();
         while remaining.0 > 0 && children.len() < self.max_children {

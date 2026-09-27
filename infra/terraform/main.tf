@@ -120,11 +120,11 @@ resource "aws_instance" "aegis" {
   }
 
   user_data = templatefile("${path.module}/user-data.sh.tftpl", {
-    region       = var.aws_region
-    account_id   = data.aws_caller_identity.current.account_id
-    repository   = aws_ecr_repository.aegis.name
-    image_tag    = var.image_tag
-    secrets_arn  = var.secrets_arn
+    region      = var.aws_region
+    account_id  = data.aws_caller_identity.current.account_id
+    repository  = aws_ecr_repository.aegis.name
+    image_tag   = var.image_tag
+    secrets_arn = var.secrets_arn
   })
 
   lifecycle {

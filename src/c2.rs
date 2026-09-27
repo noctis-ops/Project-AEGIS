@@ -48,7 +48,11 @@ impl SystemStatus {
 }
 
 fn connected(value: bool) -> &'static str {
-    if value { "متصل" } else { "منقطع" }
+    if value {
+        "متصل"
+    } else {
+        "منقطع"
+    }
 }
 
 pub trait StatusProvider: Send + Sync {
@@ -197,19 +201,13 @@ impl TelegramC2 {
                         .await?;
                     continue;
                 }
-                let reply = self
-                    .handle_command(&text, &mut pending_confirmation)
-                    .await;
+                let reply = self.handle_command(&text, &mut pending_confirmation).await;
                 self.send_message(message.chat.id, &reply).await?;
             }
         }
     }
 
-    async fn handle_command(
-        &self,
-        text: &str,
-        pending: &mut Option<C2Command>,
-    ) -> String {
+    async fn handle_command(&self, text: &str, pending: &mut Option<C2Command>) -> String {
         let parts: Vec<&str> = text.split_whitespace().collect();
         match parts.as_slice() {
             ["/status"] => {
@@ -223,8 +221,7 @@ impl TelegramC2 {
             }
             ["/resume"] => {
                 let _ = self.commands.send(C2Command::Resume).await;
-                "🔄 تم طلب الاستئناف. لن يبدأ التداول إلا بعد فحص الصحة وفترة التبريد."
-                    .to_owned()
+                "🔄 تم طلب الاستئناف. لن يبدأ التداول إلا بعد فحص الصحة وفترة التبريد.".to_owned()
             }
             ["/risk", percent] => match percent.parse::<f64>() {
                 Ok(percent) if percent > 0.0 && percent <= 5.0 => {
@@ -248,8 +245,7 @@ impl TelegramC2 {
                 *pending = Some(C2Command::ChangeMode(ExecutionMode::Live));
                 "⚠️ التحويل للوضع الحقيقي يتطلب رمز التأكيد ثم إعادة تشغيل آمنة.".to_owned()
             }
-            _ => "الأوامر: /status، /halt، /resume، /risk [نسبة]، /mode [shadow/live]"
-                .to_owned(),
+            _ => "الأوامر: /status، /halt، /resume، /risk [نسبة]، /mode [shadow/live]".to_owned(),
         }
     }
 

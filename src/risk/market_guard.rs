@@ -134,14 +134,7 @@ mod tests {
     fn wick_must_persist_without_volume_spike() {
         let mut stop = TimeWeightedStop::default();
         let level = Fixed::from_f64(99.0);
-        assert!(!stop.update(
-            Side::Buy,
-            Fixed::from_f64(98.9),
-            level,
-            1_000,
-            false,
-            true,
-        ));
+        assert!(!stop.update(Side::Buy, Fixed::from_f64(98.9), level, 1_000, false, true,));
         assert!(stop.update(
             Side::Buy,
             Fixed::from_f64(98.8),

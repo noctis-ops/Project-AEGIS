@@ -1,8 +1,4 @@
-use project_aegis::{
-    alpha::CapitalSizer,
-    execution::OrderSlicer,
-    Fixed,
-};
+use project_aegis::{alpha::CapitalSizer, execution::OrderSlicer, Fixed};
 
 #[test]
 fn official_capital_matrix_respects_exchange_and_liquidity_constraints() {

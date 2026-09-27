@@ -123,8 +123,8 @@ impl RiskManager {
     pub fn evaluate(&mut self, inputs: RiskInputs, now_ns: u64) -> RiskAction {
         let daily_drawdown = drawdown(self.day_start_equity, self.live_equity);
         let weekly_drawdown = drawdown(self.week_start_equity, self.live_equity);
-        let rolling_negative = self.rolling_net.len() == self.config.rolling_ev_window
-            && self.rolling_net_ev().0 < 0;
+        let rolling_negative =
+            self.rolling_net.len() == self.config.rolling_ev_window && self.rolling_net_ev().0 < 0;
 
         let target = if inputs.ten_second_move_fraction.abs() >= self.config.flash_move_fraction
             || inputs.user_stream_silence_ns >= self.config.user_stream_red_after_ns
@@ -238,7 +238,11 @@ impl RiskManager {
         if self.rolling_net.is_empty() {
             return Fixed::ZERO;
         }
-        let total: i128 = self.rolling_net.iter().map(|value| i128::from(value.0)).sum();
+        let total: i128 = self
+            .rolling_net
+            .iter()
+            .map(|value| i128::from(value.0))
+            .sum();
         Fixed::from_raw((total / self.rolling_net.len() as i128) as i64)
     }
 

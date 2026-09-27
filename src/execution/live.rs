@@ -13,12 +13,7 @@ use serde_json::{json, Map, Value};
 use sha2::Sha256;
 use std::{collections::BTreeMap, env, str::FromStr, time::Duration};
 use tokio::{net::TcpStream, sync::Mutex, time::timeout};
-use tokio_tungstenite::{
-    connect_async,
-    tungstenite::Message,
-    MaybeTlsStream,
-    WebSocketStream,
-};
+use tokio_tungstenite::{connect_async, tungstenite::Message, MaybeTlsStream, WebSocketStream};
 
 type HmacSha256 = Hmac<Sha256>;
 type BinanceSocket = WebSocketStream<MaybeTlsStream<TcpStream>>;
@@ -159,7 +154,10 @@ impl BinanceLiveExecution {
             if response.get("id").and_then(Value::as_u64) != Some(request_id) {
                 continue;
             }
-            let status = response.get("status").and_then(Value::as_u64).unwrap_or(500);
+            let status = response
+                .get("status")
+                .and_then(Value::as_u64)
+                .unwrap_or(500);
             if status >= 400 {
                 let error = response.get("error").cloned().unwrap_or(Value::Null);
                 return Err(VenueError::Rejected {
@@ -397,8 +395,8 @@ mod tests {
 
     #[test]
     fn hmac_signature_matches_known_vector() {
-        let signature = sign_query("key", "The quick brown fox jumps over the lazy dog")
-            .expect("signature");
+        let signature =
+            sign_query("key", "The quick brown fox jumps over the lazy dog").expect("signature");
         assert_eq!(
             signature,
             "f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8"

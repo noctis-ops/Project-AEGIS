@@ -6,6 +6,6 @@ mod parser;
 mod transport;
 
 pub use bus::{spsc_bus, LatestEventBus, SpscConsumer, SpscProducer};
-pub use lob::{BookError, LocalOrderBook, LobSynchronizer, SyncOutcome, SyncState};
+pub use lob::{BookError, LobSynchronizer, LocalOrderBook, SyncOutcome, SyncState};
 pub use parser::{parse_market_message, ParseError};
 pub use transport::{BinanceMarketDataClient, TransportConfig};

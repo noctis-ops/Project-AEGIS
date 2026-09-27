@@ -107,11 +107,7 @@ mod tests {
             min_quantity: Fixed::from_f64(0.001),
         };
         let (price, quantity) = filters
-            .normalize(
-                Side::Sell,
-                Fixed::from_f64(100.09),
-                Fixed::from_f64(1.0009),
-            )
+            .normalize(Side::Sell, Fixed::from_f64(100.09), Fixed::from_f64(1.0009))
             .expect("normalize");
         assert_eq!(price, Fixed::from_f64(100.1));
         assert_eq!(quantity, Fixed::from_f64(1.0));

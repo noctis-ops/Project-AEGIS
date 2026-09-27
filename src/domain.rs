@@ -374,7 +374,9 @@ pub struct TradeIntent {
 pub fn unix_time_ns() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .map_or(0, |duration| duration.as_nanos().min(u128::from(u64::MAX)) as u64)
+        .map_or(0, |duration| {
+            duration.as_nanos().min(u128::from(u64::MAX)) as u64
+        })
 }
 
 #[cfg(test)]

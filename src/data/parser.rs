@@ -1,5 +1,5 @@
 use crate::domain::{
-    AggTrade, BookDelta, Fixed, ForceOrder, Level, MarketEvent, MarkPrice, Side, Symbol,
+    AggTrade, BookDelta, Fixed, ForceOrder, Level, MarkPrice, MarketEvent, Side, Symbol,
     MAX_BOOK_UPDATES,
 };
 use arrayvec::ArrayVec;

@@ -20,7 +20,10 @@ pub struct TokenBucket {
 impl TokenBucket {
     #[must_use]
     pub fn new(capacity: u32, refill_per_second: f64, emergency_reserve: u32) -> Self {
-        assert!(capacity > emergency_reserve, "reserve must be below capacity");
+        assert!(
+            capacity > emergency_reserve,
+            "reserve must be below capacity"
+        );
         Self {
             capacity: f64::from(capacity),
             emergency_reserve: f64::from(emergency_reserve),

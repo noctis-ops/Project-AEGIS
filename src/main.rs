@@ -32,8 +32,7 @@ fn main() -> anyhow::Result<()> {
         .worker_threads(workers)
         .on_thread_start(move || {
             if !worker_cores.is_empty() {
-                let index = worker_index
-                    .fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+                let index = worker_index.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
                     % worker_cores.len();
                 let _ = core_affinity::set_for_current(worker_cores[index]);
             }
@@ -71,9 +70,9 @@ async fn async_main() -> anyhow::Result<()> {
             run_market_engine(symbol, venue, None, Some(user_rx), equity).await
         }
         Some("backtest") => {
-            let path = arguments
-                .get(2)
-                .ok_or_else(|| anyhow::anyhow!("usage: project-aegis backtest DATA.parquet [EQUITY]"))?;
+            let path = arguments.get(2).ok_or_else(|| {
+                anyhow::anyhow!("usage: project-aegis backtest DATA.parquet [EQUITY]")
+            })?;
             let equity = arguments
                 .get(3)
                 .map_or_else(|| Ok(Fixed::from_f64(1_000.0)), |raw| Fixed::from_str(raw))?;
@@ -104,9 +103,10 @@ async fn run_market_engine(
     let market_client = BinanceMarketDataClient::new(TransportConfig::default())?;
     let market_bus = LatestEventBus::new(10_000);
     let transport_core = core_affinity::get_core_ids().and_then(|cores| cores.last().copied());
-    let _transport_thread = market_client
-        .clone()
-        .spawn_dedicated(vec![symbol], market_bus.clone(), transport_core)?;
+    let _transport_thread =
+        market_client
+            .clone()
+            .spawn_dedicated(vec![symbol], market_bus.clone(), transport_core)?;
 
     let (open_interest_tx, mut open_interest_rx) = mpsc::channel(8);
     let open_interest_client = market_client.clone();
@@ -153,8 +153,8 @@ async fn run_market_engine(
     }
     let mut account_ready = mode == ExecutionMode::Shadow;
     let mut risk = RiskManager::new(RiskConfig::default(), bootstrap_equity);
-    let statsd_target = env::var("AEGIS_STATSD_ADDR")
-        .unwrap_or_else(|_| "127.0.0.1:8125".to_owned());
+    let statsd_target =
+        env::var("AEGIS_STATSD_ADDR").unwrap_or_else(|_| "127.0.0.1:8125".to_owned());
     let telemetry = Telemetry::start(&statsd_target, 8_192);
     let status = SharedStatus::new(SystemStatus {
         equity: bootstrap_equity,
@@ -247,7 +247,9 @@ async fn run_market_engine(
                         risk.force_red(at_ns);
                         let _ = orders.orphan_protection(symbol, at_ns).await;
                         if let Some(sender) = &notifications {
-                            sender.send("🔴 انقطع تدفق الحساب؛ أُلغيت الأوامر وسُوّيت المراكز.".to_owned());
+                            sender.send(
+                                "🔴 انقطع تدفق الحساب؛ أُلغيت الأوامر وسُوّيت المراكز.".to_owned(),
+                            );
                         }
                     }
                 }
@@ -357,7 +359,9 @@ async fn run_market_engine(
                     synchronizer.begin_resync();
                     pending_snapshot = Some(market_client.snapshot(symbol).await?);
                     if let Some(sender) = &notifications {
-                        sender.send("🟠 انقطع تدفق السوق؛ أُلغيت الأوامر وبدأت إعادة المزامنة.".to_owned());
+                        sender.send(
+                            "🟠 انقطع تدفق السوق؛ أُلغيت الأوامر وبدأت إعادة المزامنة.".to_owned(),
+                        );
                     }
                 }
             }
@@ -400,7 +404,8 @@ async fn synchronize_initial_book(
                 }
                 match synchronizer.install_snapshot(&snapshot) {
                     Ok(()) => return Ok(()),
-                    Err(BookError::SnapshotBridgeMissing) if synchronizer.state() == SyncState::AwaitingSnapshot => {}
+                    Err(BookError::SnapshotBridgeMissing)
+                        if synchronizer.state() == SyncState::AwaitingSnapshot => {}
                     Err(_) => {
                         synchronizer.begin_resync();
                         snapshot = client.snapshot(snapshot.symbol).await?;
@@ -426,14 +431,8 @@ fn start_c2_if_configured(
         .parse::<i64>()?;
     let confirmation = env::var("AEGIS_C2_CONFIRMATION_CODE")?;
     let provider: Arc<dyn StatusProvider> = Arc::new(status);
-    let (service, notifications) = TelegramC2::new(
-        token,
-        user_id,
-        chat_id,
-        confirmation,
-        commands,
-        provider,
-    )?;
+    let (service, notifications) =
+        TelegramC2::new(token, user_id, chat_id, confirmation, commands, provider)?;
     tokio::spawn(async move {
         if let Err(error) = service.run().await {
             error!(%error, "Telegram C2 stopped");

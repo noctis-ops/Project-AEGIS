@@ -136,7 +136,8 @@ impl OrderManager {
                 && !managed.brackets_installed
         };
         if install_brackets {
-            self.install_brackets(update.client_id, update.timestamp_ns).await?;
+            self.install_brackets(update.client_id, update.timestamp_ns)
+                .await?;
         }
         Ok(())
     }
@@ -154,7 +155,9 @@ impl OrderManager {
             (
                 managed.request.clone(),
                 managed.stop_loss.ok_or(OrderManagerError::MissingBracket)?,
-                managed.take_profit.ok_or(OrderManagerError::MissingBracket)?,
+                managed
+                    .take_profit
+                    .ok_or(OrderManagerError::MissingBracket)?,
                 managed.cumulative_filled,
             )
         };
@@ -221,9 +224,7 @@ impl OrderManager {
             return Ok(());
         }
         self.acquire(2, RequestClass::Emergency)?;
-        self.venue
-            .cancel(managed.request.symbol, client_id)
-            .await?;
+        self.venue.cancel(managed.request.symbol, client_id).await?;
         let offset = Fixed::from_raw(
             self.config
                 .filters
@@ -403,10 +404,7 @@ pub enum OrderManagerError {
     #[error("execution update references an unknown order")]
     UnknownOrder,
     #[error("invalid order transition from {from:?} to {to:?}")]
-    InvalidTransition {
-        from: OrderStatus,
-        to: OrderStatus,
-    },
+    InvalidTransition { from: OrderStatus, to: OrderStatus },
     #[error("filled entry has no valid bracket data")]
     MissingBracket,
 }

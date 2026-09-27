@@ -3,15 +3,24 @@ use crate::domain::{unix_time_ns, Fixed, Side, Symbol};
 use futures_util::{SinkExt, StreamExt};
 use serde::Deserialize;
 use std::{str::FromStr, time::Duration};
-use tokio::{sync::mpsc, time::{interval, sleep, Instant}};
+use tokio::{
+    sync::mpsc,
+    time::{interval, sleep, Instant},
+};
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 use tracing::warn;
 
 #[derive(Debug, Clone)]
 pub enum UserDataEvent {
     Execution(ExecutionUpdate),
-    AccountEquity { wallet: Fixed, available: Fixed, at_ns: u64 },
-    Disconnected { at_ns: u64 },
+    AccountEquity {
+        wallet: Fixed,
+        available: Fixed,
+        at_ns: u64,
+    },
+    Disconnected {
+        at_ns: u64,
+    },
 }
 
 pub struct BinanceUserStream {
@@ -42,7 +51,9 @@ impl BinanceUserStream {
                 warn!(%error, "Binance user stream stopped");
             }
             let _ = output
-                .send(UserDataEvent::Disconnected { at_ns: unix_time_ns() })
+                .send(UserDataEvent::Disconnected {
+                    at_ns: unix_time_ns(),
+                })
                 .await;
             sleep(Duration::from_secs(1)).await;
         }
@@ -50,7 +61,8 @@ impl BinanceUserStream {
 
     async fn run_once(&self, output: &mpsc::Sender<UserDataEvent>) -> anyhow::Result<()> {
         let listen_key = self.create_listen_key().await?;
-        let (mut socket, _) = connect_async(format!("{}/{}", self.websocket_base, listen_key)).await?;
+        let (mut socket, _) =
+            connect_async(format!("{}/{}", self.websocket_base, listen_key)).await?;
         let mut heartbeat = interval(Duration::from_secs(1));
         let mut keepalive = interval(Duration::from_secs(30 * 60));
         let mut last_response = Instant::now();
@@ -119,7 +131,9 @@ fn parse_user_event(raw: &str) -> anyhow::Result<Option<UserDataEvent>> {
     let at_ns = envelope.event_time.saturating_mul(1_000_000);
     match envelope.event_type.as_str() {
         "ORDER_TRADE_UPDATE" => {
-            let order = envelope.order.ok_or_else(|| anyhow::anyhow!("order payload missing"))?;
+            let order = envelope
+                .order
+                .ok_or_else(|| anyhow::anyhow!("order payload missing"))?;
             let Some(client_id) = ClientOrderId::parse(&order.client_order_id) else {
                 // Ignore manual orders, but reconciliation will still see their exposure.
                 return Ok(None);
@@ -138,7 +152,11 @@ fn parse_user_event(raw: &str) -> anyhow::Result<Option<UserDataEvent>> {
                 Some(Fill {
                     client_id,
                     symbol: Symbol::new(&order.symbol)?,
-                    side: if order.side == "BUY" { Side::Buy } else { Side::Sell },
+                    side: if order.side == "BUY" {
+                        Side::Buy
+                    } else {
+                        Side::Sell
+                    },
                     quantity: last_quantity,
                     price: Fixed::from_str(&order.last_filled_price)?,
                     fee: Fixed::from_str(&order.commission)?,
@@ -165,7 +183,9 @@ fn parse_user_event(raw: &str) -> anyhow::Result<Option<UserDataEvent>> {
             })))
         }
         "ACCOUNT_UPDATE" => {
-            let account = envelope.account.ok_or_else(|| anyhow::anyhow!("account payload missing"))?;
+            let account = envelope
+                .account
+                .ok_or_else(|| anyhow::anyhow!("account payload missing"))?;
             let usdt = account
                 .balances
                 .into_iter()
@@ -257,6 +277,9 @@ mod tests {
             panic!("execution event expected");
         };
         assert_eq!(update.status, OrderStatus::PartiallyFilled);
-        assert_eq!(update.last_fill.expect("fill").price, Fixed::from_f64(100.0));
+        assert_eq!(
+            update.last_fill.expect("fill").price,
+            Fixed::from_f64(100.0)
+        );
     }
 }

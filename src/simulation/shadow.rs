@@ -274,16 +274,18 @@ impl ShadowExecutionEngine {
                 };
                 let resting_hit = order.request.kind == OrderKind::Limit
                     && order.request.time_in_force == TimeInForce::Gtx
-                    && order.request.price.is_some_and(|limit| match order.request.side {
-                        Side::Buy => trade.buyer_is_maker && trade.price <= limit,
-                        Side::Sell => !trade.buyer_is_maker && trade.price >= limit,
-                    });
+                    && order
+                        .request
+                        .price
+                        .is_some_and(|limit| match order.request.side {
+                            Side::Buy => trade.buyer_is_maker && trade.price <= limit,
+                            Side::Sell => !trade.buyer_is_maker && trade.price >= limit,
+                        });
                 if !trigger_hit && !resting_hit {
                     continue;
                 }
-                let available = Fixed::from_f64(
-                    trade.quantity.as_f64() * participation.clamp(0.0, 1.0),
-                );
+                let available =
+                    Fixed::from_f64(trade.quantity.as_f64() * participation.clamp(0.0, 1.0));
                 let maker = resting_hit;
                 let mut executable = available;
                 if maker && order.queue_ahead.0 > 0 {
@@ -377,7 +379,9 @@ impl ShadowExecutionEngine {
                 message: "no visible liquidity".to_owned(),
             })?;
         if request.kind == OrderKind::Limit {
-            let limit = request.price.ok_or_else(|| VenueError::InvalidResponse("IOC price".to_owned()))?;
+            let limit = request
+                .price
+                .ok_or_else(|| VenueError::InvalidResponse("IOC price".to_owned()))?;
             let outside_limit = match request.side {
                 Side::Buy => level.price > limit,
                 Side::Sell => level.price < limit,
@@ -397,10 +401,7 @@ impl ShadowExecutionEngine {
             Side::Sell => Fixed::from_f64(level.price.as_f64() * (1.0 - impact_bps / 10_000.0)),
         };
         let fee = Fixed::from_f64(
-            price.as_f64()
-                * request.quantity.as_f64()
-                * state.config.taker_fee_bps
-                / 10_000.0,
+            price.as_f64() * request.quantity.as_f64() * state.config.taker_fee_bps / 10_000.0,
         );
         let fill = Fill {
             client_id: request.client_id,

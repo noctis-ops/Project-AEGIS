@@ -98,10 +98,14 @@ impl BinanceMarketDataClient {
                                 match parse_market_message(&mut bytes) {
                                     Ok(event) => {
                                         if output.push_latest(event).is_some() {
-                                            warn!("market event bus overflow; oldest event dropped");
+                                            warn!(
+                                                "market event bus overflow; oldest event dropped"
+                                            );
                                         }
                                     }
-                                    Err(error) => warn!(%error, "discarding malformed market event"),
+                                    Err(error) => {
+                                        warn!(%error, "discarding malformed market event")
+                                    }
                                 }
                             }
                             Ok(Some(Ok(Message::Binary(payload)))) => {

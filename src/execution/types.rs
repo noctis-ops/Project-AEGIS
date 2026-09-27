@@ -1,6 +1,9 @@
 use crate::domain::{Fixed, Side, Symbol};
 use async_trait::async_trait;
-use std::{fmt, sync::atomic::{AtomicU64, Ordering}};
+use std::{
+    fmt,
+    sync::atomic::{AtomicU64, Ordering},
+};
 use thiserror::Error;
 
 static ORDER_SEQUENCE: AtomicU64 = AtomicU64::new(1);

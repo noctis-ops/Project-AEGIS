@@ -307,9 +307,7 @@ mod tests {
             bid_count: 5,
             ask_count: 5,
         };
-        assert!(engine
-            .on_book(&book, Fixed::from_f64(1_000.0))
-            .is_none());
+        assert!(engine.on_book(&book, Fixed::from_f64(1_000.0)).is_none());
         book.timestamp_ns += 1;
         let intent = engine
             .on_book(&book, Fixed::from_f64(1_000.0))

@@ -23,23 +23,14 @@ pub fn order_book_imbalance<const N: usize>(book: &BookTop<N>, levels: usize) ->
 
 /// Returns the largest adjacent price gap in exchange ticks.
 #[must_use]
-pub fn liquidity_void_ticks<const N: usize>(
-    book: &BookTop<N>,
-    tick_size: Fixed,
-) -> (u64, u64) {
+pub fn liquidity_void_ticks<const N: usize>(book: &BookTop<N>, tick_size: Fixed) -> (u64, u64) {
     if tick_size.0 <= 0 {
         return (0, 0);
     }
     let max_gap = |levels: &[crate::domain::Level]| {
         levels
             .windows(2)
-            .map(|window| {
-                window[0]
-                    .price
-                    .0
-                    .abs_diff(window[1].price.0)
-                    / tick_size.0 as u64
-            })
+            .map(|window| window[0].price.0.abs_diff(window[1].price.0) / tick_size.0 as u64)
             .max()
             .unwrap_or(0)
     };
