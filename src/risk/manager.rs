@@ -311,8 +311,10 @@ mod tests {
 
     #[test]
     fn red_breaker_latches_and_requires_cooldown() {
-        let mut config = RiskConfig::default();
-        config.cooldown_ns = 100;
+        let config = RiskConfig {
+            cooldown_ns: 100,
+            ..RiskConfig::default()
+        };
         let mut risk = RiskManager::new(config, Fixed::from_f64(1_000.0));
         assert_eq!(
             risk.evaluate(
