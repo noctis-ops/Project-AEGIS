@@ -110,7 +110,7 @@ impl BinanceMarketDataClient {
                                     output.push_latest(event);
                                 }
                             }
-                            Ok(Some(Ok(Message::Close(_))) | Ok(None) => break,
+                            Ok(Some(Ok(Message::Close(_)))) | Ok(None) => break,
                             Ok(Some(Ok(_))) => {}
                             Ok(Some(Err(error))) => {
                                 warn!(%error, "market stream error");

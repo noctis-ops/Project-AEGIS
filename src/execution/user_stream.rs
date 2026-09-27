@@ -251,11 +251,8 @@ mod tests {
 
     #[test]
     fn parses_execution_report() {
-        let id = ClientOrderId::generate(1);
-        let raw = format!(
-            r#"{{"e":"ORDER_TRADE_UPDATE","E":1000,"o":{{"c":"{id}","s":"BTCUSDT","S":"BUY","X":"PARTIALLY_FILLED","z":"0.5","l":"0.5","L":"100","n":"0.01","m":true}}}}"#
-        );
-        let event = parse_user_event(&raw).expect("parse").expect("event");
+        let raw = r#"{"e":"ORDER_TRADE_UPDATE","E":1000,"o":{"c":"00000000000000000000000000000001","s":"BTCUSDT","S":"BUY","X":"PARTIALLY_FILLED","z":"0.5","l":"0.5","L":"100","n":"0.01","m":true}}"#;
+        let event = parse_user_event(raw).expect("parse").expect("event");
         let UserDataEvent::Execution(update) = event else {
             panic!("execution event expected");
         };
