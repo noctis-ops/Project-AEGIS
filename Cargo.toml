@@ -2,7 +2,7 @@
 name = "project-aegis"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.80"
+rust-version = "1.85"
 description = "Five-layer, safety-first Binance USD-M futures trading and simulation engine"
 license = "Proprietary"
 publish = false

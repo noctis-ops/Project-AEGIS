@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-FROM rust:1.82-bookworm AS builder
+FROM rust:1.98-bookworm AS builder
 WORKDIR /src
 COPY Cargo.toml rust-toolchain.toml ./
 COPY src ./src

@@ -27,7 +27,7 @@
 
 ### المتطلبات
 
-- Rust stable (MSRV المعلن 1.80)
+- Rust stable (MSRV المعلن 1.85؛ بيئة البناء المثبتة 1.98.1)
 - Linux موصى به للإنتاج
 - بيانات Parquet وفق [`docs/data-lake-schema.md`](docs/data-lake-schema.md) للاختبار التاريخي
 

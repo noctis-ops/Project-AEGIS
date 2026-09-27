@@ -1,2 +1,0 @@
-[env]
-RUSTFMT = { value = "scripts/rustfmt-diagnostic.sh", relative = true }
