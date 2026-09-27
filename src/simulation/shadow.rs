@@ -243,8 +243,8 @@ impl ShadowExecutionEngine {
             let participation = state.config.max_trade_participation;
             let maker_fee_bps = state.config.maker_fee_bps;
             let taker_fee_bps = state.config.taker_fee_bps;
-            let mut produced_fill = None;
-            let mut produced_update = None;
+            let produced_fill;
+            let produced_update;
             {
                 let Some(order) = state.orders.get_mut(&id) else {
                     continue;
@@ -323,22 +323,18 @@ impl ShadowExecutionEngine {
                     timestamp_ns: trade.event_time_ns,
                     maker,
                 };
-                produced_update = Some(ExecutionUpdate {
+                produced_update = ExecutionUpdate {
                     client_id: id,
                     status: order.status,
                     cumulative_filled: order.filled,
                     last_fill: Some(fill),
                     realized_pnl: None,
                     timestamp_ns: trade.event_time_ns,
-                });
-                produced_fill = Some(fill);
+                };
+                produced_fill = fill;
             }
-            if let Some(fill) = produced_fill {
-                state.record_fill(fill);
-            }
-            if let Some(update) = produced_update {
-                state.updates.push_back(update);
-            }
+            state.record_fill(produced_fill);
+            state.updates.push_back(produced_update);
         }
         state.updates.drain(..).collect()
     }

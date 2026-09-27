@@ -72,7 +72,7 @@ impl BinanceUserStream {
                     if last_response.elapsed() > Duration::from_secs(3) {
                         anyhow::bail!("USER_DATA_STREAM heartbeat exceeded three seconds");
                     }
-                    socket.send(Message::Ping(Vec::new().into())).await?;
+                    socket.send(Message::Ping(Vec::new())).await?;
                 }
                 _ = keepalive.tick() => {
                     self.keepalive(&listen_key).await?;

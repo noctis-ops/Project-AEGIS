@@ -52,7 +52,7 @@ impl BinanceLiveExecution {
         {
             let _ = credentials;
             let _ = acknowledgement;
-            return Err(VenueError::LiveDisabled);
+            Err(VenueError::LiveDisabled)
         }
         #[cfg(feature = "live-trading")]
         {

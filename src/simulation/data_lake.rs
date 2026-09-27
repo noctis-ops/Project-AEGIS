@@ -1,6 +1,9 @@
 use crate::domain::{BookSnapshot, MarketEvent};
 use std::path::Path;
 
+// Replay preserves the exact allocation-free MarketEvent representation used
+// by the live path; the size trade-off is deliberate path parity.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone)]
 pub enum HistoricalRecord {
     Snapshot {

@@ -21,7 +21,6 @@ pub struct BacktestEngine {
 }
 
 impl BacktestEngine {
-    #[must_use]
     pub fn new(
         feed: DataFeed,
         alpha: AlphaEngine,

@@ -324,6 +324,9 @@ pub struct ForceOrder {
     pub quantity: Fixed,
 }
 
+// The large inline depth payload is intentional: the live hot path uses a
+// preallocated bounded queue and must not allocate a Box for every depth tick.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum MarketEvent {
     Depth(BookDelta),
